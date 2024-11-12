@@ -1,36 +1,49 @@
 <template>
     <div>
-        <h2>Selecciona el teu producte</h2>
-    
-        <div v-for="(product, index) in products" :key="index">
-            <span>{{ product.name }}  ${{ product.price }}</span>
-            <button @click="addToCart(product)">Afegir a la cistella</button>
-        </div>
-    </div>
+        <h1>HAMBURGUESERIA</h1>
 
+        <input v-model="comandaName" placeholder="Introduïu el nom de la comanda" />
+        <button @click="placeOrder"> Place Order </button>
+        <button @click="changeDivisa"> Divisa</button>
+
+        <Product :divisa="divisa" />
+        <Cart :cart="cart" :divisa="divisa" :comandaName="comandaName" />
+    </div>
 </template>
 
-<script>
-import { defineComponent, inject } from 'vue';
+<script setup>
+    import { ref, provide } from 'vue';
+    import Cart from './Cart.vue';
+    import Product from './Product.vue';
 
-export default defineComponent({
-    name: 'Order',
-    setup(props, {emit}) {
-        const products = [
-            { name: 'Hamburguesa 🍔', price: 5.00 },
-            { name: 'Cheeseburger 🧀', price: 6.00 },
-            { name: 'Impossible Burger 🥕', price: 7.00 },
-            { name: 'Patates 🍟', price: 2.00 }
-        ];
+    const comandaName = ref('');
+    const cart = ref([]);
+    const divisa = ref('EUR');
 
-        const addToCart = (product) => {
-            emit('add-to-cart', product);
+    const changeDivisa = () => {
+        divisa.value = divisa.value === 'EUR' ? 'USD' : 'EUR';
+    };
+
+
+    const placeOrder = () => {
+        if (cart.value.length > 0 || comandaName.value) {
+            alert(`Comanda de: ${comandaName.value}`);
+            comandaName.value = '';
+            cart.value = [];
+        } else {
+            alert('Comanda buida!')
         }
+    };
 
-        return{
-            products, 
-            addToCart
-        };
+
+    const addToCart = (product) => {
+        if (!comandaName.value) {
+        alert('Es necessita introduir el nom de la comanda abans d\'afegir productes.');
+      return;
     }
-});
+        cart.value.push(product);
+    }
+
+    provide('Afegir a la cistella', addToCart);
+    provide('divisa', divisa);
 </script>

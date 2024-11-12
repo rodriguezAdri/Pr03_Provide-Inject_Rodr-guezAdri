@@ -1,29 +1,35 @@
 <template>
     <div>
-        <h2>Cistella de la comanda</h2>
-        <p v-if="orderName"><strong>Nom de la comanda:</strong>{{ orderName }}</p>        
-    
-        <ul>
-            <li v-for="(item, index) in cart" :key="index">
-                {{ item.name }} - {{ item.price }}€
-            </li>
-        </ul>
+      <h2>CISTELLA: {{ comandaName }}</h2>
+      <ul>
+        <li v-for="product in cart" :key="product.name">
+          <p>{{ product.name }} - {{ getPrice(product.price) }} - {{ divisa }}</p>
+        </li>
+      </ul>
     </div>
-</template>
-
-<script>
-import { inject } from 'vue';
-
-export default {
-    name: 'Cart',
-    setUp(){
-        const orderName = inject('orderName');
-        const cart = inject('cart');
-
-        return {
-            orderName,
-            cart
-        };
+  </template>
+  
+  <script setup>
+  import { defineProps } from 'vue'
+  
+  // Definir las props
+  const props = defineProps({
+    cart: {
+        type: Array,
+        required: true
+    },
+    divisa: {
+        type: String,
+        required: true
+    },
+    comandaName:{
+        type: String,
+        required: true
     }
-};
-</script>
+  });
+
+  const getPrice = (price) => {
+  return props.divisa === 'EUR' ? `${price}€` : `${(price * 0.93).toFixed(2)}$`;
+}
+  </script>
+  
